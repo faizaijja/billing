@@ -325,7 +325,7 @@
       /* Invoice overlay — compact bottom-sheet on mobile */
       .overlay{
         padding:0;
-        overflow-y:auto;
+        overflow-y:hidden;
         align-items:flex-end;
         justify-content:stretch
       }
@@ -358,8 +358,40 @@
       .inv-btn,.send-btn,.inv-ebm-btn{padding:6px 9px;font-size:11px}
 
       /* Invoice body: single column */
-      .invoice-body{grid-template-columns:1fr;padding:10px;gap:10px}
+      .invoice-body{grid-template-columns:1fr;padding:8px;gap:8px}
       .invoice-side{order:-1}
+
+      /* Force ALL invoice cards and content to fit within sheet */
+      .invoice-page,.invoice-body,.invoice-main,.invoice-side,
+      .inv-card,.inv-summary-card,.rssb-card,.side-card{
+        width:100%;max-width:100%;box-sizing:border-box;overflow:hidden
+      }
+
+      /* Items tables: shrink columns, hide less critical cols */
+      .items-table{width:100%;table-layout:fixed}
+      .items-table th,.items-table td{
+        padding:6px 6px;font-size:11px;
+        white-space:normal;word-break:break-word
+      }
+      /* Hide Unit Price column on mobile — keep Item, Qty, Total, Delete */
+      .items-table th:nth-child(3),
+      .items-table td:nth-child(3){display:none}
+      /* Delete button column: just wide enough */
+      .items-table th:nth-child(5),
+      .items-table td:nth-child(5){width:36px;padding:6px 4px;text-align:center}
+      /* Item name col: takes remaining space */
+      .items-table th:nth-child(1),
+      .items-table td:nth-child(1){width:40%}
+      .items-table th:nth-child(2),
+      .items-table td:nth-child(2){width:15%}
+      .items-table th:nth-child(4),
+      .items-table td:nth-child(4){width:25%}
+
+      /* Summary & cash tables: fit width */
+      .inv-summary-table,.cash-table{width:100%;table-layout:fixed}
+      .inv-summary-table td,.cash-table td,.cash-table th{
+        font-size:11px;padding:7px 10px;word-break:break-word
+      }
 
       /* Visit info grid: 1 col */
       .visit-info-grid{grid-template-columns:1fr;gap:10px}
