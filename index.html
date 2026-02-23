@@ -205,7 +205,16 @@
     .audit-del-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:#fff;border:1px solid #fca5a5;border-radius:6px;cursor:pointer;margin-top:5px}
     .audit-del-btn:hover{background:#fee2e2}
     .audit-del-btn svg{width:13px;height:13px;stroke:#ef4444;fill:none;stroke-width:2}
-    /* EBM */
+    /* ── HAMBURGER / MOBILE NAV ── */
+    .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0}
+    .hamburger span{display:block;height:2px;background:#374151;border-radius:2px;transition:all .3s}
+    .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .hamburger.open span:nth-child(2){opacity:0}
+    .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:149}
+    .sidebar-overlay.open{display:block}
+
+    /* ── EBM */
     .inv-ebm-wrapper{position:relative;display:inline-block}
     .inv-ebm-btn{display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid #a7f3d0;background:#d1fae5;color:#065f46;white-space:nowrap}
     .inv-ebm-btn svg{width:11px;height:11px;transition:transform .25s}
@@ -264,6 +273,74 @@
     .initiated-by{padding:9px 16px;font-size:11px;color:#6b7280;text-align:right;border-top:1px solid #f3f4f6}
     @media print{body>*{display:none!important}.printable-frame{display:block!important;position:fixed;inset:0;z-index:9999;background:#fff}}
     .printable-frame{display:none}
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      /* Sidebar as drawer */
+      .hamburger{display:flex}
+      .sidebar{
+        position:fixed;left:-260px;top:0;bottom:0;z-index:150;
+        width:240px;transition:left .25s ease;box-shadow:none
+      }
+      .sidebar.open{left:0;box-shadow:4px 0 20px rgba(0,0,0,.15)}
+      .sidebar-overlay.open{display:block}
+
+      /* Header */
+      .header{padding:12px 16px;gap:8px}
+      .header h1{font-size:18px}
+      .header-right{gap:10px}
+      .company-dropdown{padding:6px 10px;font-size:12px}
+
+      /* Content */
+      .content-area{padding:14px 12px}
+
+      /* Controls row: wrap */
+      .controls{flex-wrap:wrap;gap:8px}
+      .search-box{max-width:100%;flex:1 1 100%;order:3}
+      .filter-btn,.clear-filter-btn{font-size:13px;padding:8px 12px}
+
+      /* Table: horizontal scroll */
+      .table-container{overflow-x:auto;-webkit-overflow-scrolling:touch}
+      table{min-width:700px}
+
+      /* Invoice overlay */
+      .overlay{padding:0}
+      .invoice-page{border-radius:0;min-height:100vh}
+      .invoice-topbar{padding:10px 12px;flex-wrap:wrap;gap:8px}
+      .inv-topbar-right{gap:4px;flex-wrap:wrap}
+      .inv-btn,.send-btn,.inv-ebm-btn{padding:6px 9px;font-size:11px}
+
+      /* Invoice body: single column */
+      .invoice-body{
+        grid-template-columns:1fr;
+        padding:10px;gap:10px
+      }
+      .invoice-side{order:-1} /* show side cards above main on mobile */
+
+      /* Visit info grid: 1 col */
+      .visit-info-grid{grid-template-columns:1fr;gap:10px}
+      .visit-col + .visit-col{border-top:1px solid #f3f4f6;padding-top:10px}
+
+      /* RSSB body: 1 col */
+      .rssb-body{grid-template-columns:1fr}
+      .rssb-col{border-right:none;border-bottom:1px solid #f3f4f6}
+      .rssb-col:last-child{border-bottom:none}
+
+      /* New visit view */
+      .form-view-area{border-radius:0;min-height:100vh;padding:12px}
+
+      /* Pagination */
+      .pagination{padding:12px 8px;gap:4px;flex-wrap:wrap;justify-content:center}
+      .page-btn{padding:6px 9px;font-size:12px}
+      .page-info{font-size:12px}
+    }
+
+    @media (max-width: 480px) {
+      .header h1{font-size:15px}
+      .company-dropdown span:not(:first-child){display:none} /* hide text, keep icon */
+      .inv-title{font-size:14px}
+      .inv-topbar-right{width:100%}
+      .invoice-body{padding:8px;gap:8px}
+    }
   </style>
 </head>
 <body>
@@ -291,12 +368,16 @@
     </div>
   </aside>
 
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
   <main class="main-content">
     <header class="header">
       <h1>Billing</h1>
       <div class="header-right">
         <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <div class="company-dropdown"><span>Company Logo</span><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9L1 4h10z"/></svg></div>
+        <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </header>
     <div class="content-area">
@@ -670,8 +751,8 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back
     </button>
     <div class="form-card">
-      <h2>New Visit Information</h2>
-      <p class="form-subtitle">Add new visit information</p>
+      <h2>Edit Visit Information</h2>
+     
       <div class="form-group-nv"><label>Department</label><select><option value="">Select a department</option><option>General Medicine</option><option>Pediatrics</option><option>Cardiology</option><option>Orthopedics</option><option>Dermatology</option></select></div>
       <div class="form-group-nv"><label>Preferred Doctor (optional)</label><select><option value="">Select doctor</option><option>Dr. Jacob Ryan</option><option>Dr. Amina Otieno</option><option>Dr. Chen Wei</option></select></div>
       <div class="form-group-nv"><label>Insurance</label><select><option value="">Select insurance</option><option>RSSB</option><option>MMI</option><option>RADIANT</option><option>Private</option></select></div>
@@ -1808,6 +1889,21 @@ function renderAuditTrail() {
         <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
       </button>
     </div>`).join('');
+}
+
+// ── Mobile sidebar ──────────────────────────────────────────────
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const hamburger = document.getElementById('hamburger');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+  hamburger.classList.toggle('open');
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
 }
 
 </script>
