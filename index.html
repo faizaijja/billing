@@ -206,8 +206,8 @@
     .audit-del-btn:hover{background:#fee2e2}
     .audit-del-btn svg{width:13px;height:13px;stroke:#ef4444;fill:none;stroke-width:2}
     /* ── HAMBURGER / MOBILE NAV ── */
-    .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0}
-    .hamburger span{display:block;height:2px;background:#374151;border-radius:2px;transition:all .3s}
+    .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:#f3f4f6;border:1.5px solid #d1d5db;border-radius:6px;cursor:pointer;padding:7px;flex-shrink:0}
+    .hamburger span{display:block;height:2.5px;background:#111827;border-radius:2px;transition:all .3s;width:100%}
     .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
     .hamburger.open span:nth-child(2){opacity:0}
     .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
@@ -274,8 +274,28 @@
     @media print{body>*{display:none!important}.printable-frame{display:block!important;position:fixed;inset:0;z-index:9999;background:#fff}}
     .printable-frame{display:none}
     /* ── RESPONSIVE ── */
+
+    /* ── Tablet (769px–1024px): sidebar collapses, main content breathes ── */
+    @media (max-width: 1024px) and (min-width: 769px) {
+      .hamburger{display:flex}
+      .sidebar{
+        position:fixed;left:-260px;top:0;bottom:0;z-index:150;
+        width:240px;transition:left .25s ease;box-shadow:none
+      }
+      .sidebar.open{left:0;box-shadow:4px 0 20px rgba(0,0,0,.15)}
+      .sidebar-overlay.open{display:block}
+      .header{padding:14px 24px}
+      .content-area{padding:20px 24px}
+      /* Invoice: 2-col but narrower side panel */
+      .invoice-body{grid-template-columns:1fr 260px}
+      /* Visit grid: 2 cols instead of 3 */
+      .visit-info-grid{grid-template-columns:1fr 1fr}
+      .rssb-body{grid-template-columns:1fr 1fr}
+      .rssb-col:last-child{grid-column:1/-1;border-right:none;border-top:1px solid #f3f4f6}
+    }
+
+    /* ── Mobile (≤768px): sidebar drawer, stacked layout ── */
     @media (max-width: 768px) {
-      /* Sidebar as drawer */
       .hamburger{display:flex}
       .sidebar{
         position:fixed;left:-260px;top:0;bottom:0;z-index:150;
@@ -310,11 +330,8 @@
       .inv-btn,.send-btn,.inv-ebm-btn{padding:6px 9px;font-size:11px}
 
       /* Invoice body: single column */
-      .invoice-body{
-        grid-template-columns:1fr;
-        padding:10px;gap:10px
-      }
-      .invoice-side{order:-1} /* show side cards above main on mobile */
+      .invoice-body{grid-template-columns:1fr;padding:10px;gap:10px}
+      .invoice-side{order:-1}
 
       /* Visit info grid: 1 col */
       .visit-info-grid{grid-template-columns:1fr;gap:10px}
@@ -334,12 +351,52 @@
       .page-info{font-size:12px}
     }
 
+    /* ── Small phones (≤480px) ── */
     @media (max-width: 480px) {
       .header h1{font-size:15px}
-      .company-dropdown span:not(:first-child){display:none} /* hide text, keep icon */
+      /* Hide company text label, keep dropdown arrow icon only */
+      .company-dropdown span:first-child{display:none}
       .inv-title{font-size:14px}
       .inv-topbar-right{width:100%}
       .invoice-body{padding:8px;gap:8px}
+    }
+
+    /* ── Very small phones (≤320px) ── */
+    @media (max-width: 320px) {
+      .header{padding:10px 10px;gap:6px}
+      .header h1{font-size:13px}
+      /* Stack notification + company + hamburger tightly */
+      .header-right{gap:6px}
+      .company-dropdown{padding:5px 7px;font-size:11px}
+      .notification-icon{width:17px;height:17px}
+      .hamburger{width:30px;height:30px}
+      .content-area{padding:10px 8px}
+      .controls{gap:6px}
+      .filter-btn,.clear-filter-btn{font-size:12px;padding:7px 9px}
+      .inv-btn,.send-btn,.inv-ebm-btn{padding:5px 7px;font-size:10px}
+      .invoice-topbar{padding:8px 10px}
+      .page-btn{padding:5px 7px;font-size:11px}
+    }
+
+    /* ── Landscape on phones (short viewport, wide) ── */
+    @media (max-height: 500px) and (max-width: 900px) and (orientation: landscape) {
+      /* Sidebar: full height, scrollable */
+      .sidebar{overflow-y:auto}
+      /* Reduce sidebar logo/nav padding so it fits */
+      .logo{padding:12px 20px;font-size:17px}
+      .nav-item{padding:7px 20px}
+      .user-section{padding:12px 20px}
+      /* Invoice overlay: scrollable, not locked to full viewport height */
+      .overlay{padding:12px}
+      .invoice-page{min-height:unset}
+      .invoice-body{padding:8px;gap:8px}
+      /* Header: slimmer */
+      .header{padding:9px 16px}
+      .header h1{font-size:16px}
+      /* Content: less top/bottom padding */
+      .content-area{padding:10px 12px}
+      /* Form view */
+      .form-view-area{min-height:unset;padding:10px}
     }
   </style>
 </head>
@@ -751,8 +808,8 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back
     </button>
     <div class="form-card">
-      <h2>Edit Visit Information</h2>
-     
+      <h2>New Visit Information</h2>
+      <p class="form-subtitle">Add new visit information</p>
       <div class="form-group-nv"><label>Department</label><select><option value="">Select a department</option><option>General Medicine</option><option>Pediatrics</option><option>Cardiology</option><option>Orthopedics</option><option>Dermatology</option></select></div>
       <div class="form-group-nv"><label>Preferred Doctor (optional)</label><select><option value="">Select doctor</option><option>Dr. Jacob Ryan</option><option>Dr. Amina Otieno</option><option>Dr. Chen Wei</option></select></div>
       <div class="form-group-nv"><label>Insurance</label><select><option value="">Select insurance</option><option>RSSB</option><option>MMI</option><option>RADIANT</option><option>Private</option></select></div>
